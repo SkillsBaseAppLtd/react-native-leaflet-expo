@@ -1,17 +1,21 @@
 # react-native-leaflet-expo
 
-This is a fork of https://github.com/pavel-corsaghin/react-native-leaflet/
+This is a version of "react-native-leaflet" for use in Expo projects.
 
-I created it because the original project does not work in Expo preview mode.
+This __requires__ Expo.
 
-This one does, but it also __requires__ Expo. If you only use React Native without Expo, refer to the project of pavel-corsaghin.
+If you are using only React Native without Expo, refer to https://github.com/pavel-corsaghin/react-native-leaflet/.
 
-## How to use
+## Installation
 package.json:
 ```
 {
   "dependencies": {
-    "react-native-leaflet-view": "lichtmetzger/react-native-leaflet-expo",
+    "react-native-leaflet-view": "git://github.com/SkillsBaseAppLtd/react-native-leaflet-expo.git",
     ...
 }
 ```
+
+## Usage
+
+https://github.com/SkillsBaseAppLtd/react-native-leaflet-expo/blob/main/example/src/App.tsx
