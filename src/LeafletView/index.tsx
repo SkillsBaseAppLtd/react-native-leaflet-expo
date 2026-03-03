@@ -85,7 +85,7 @@ const LeafletView: React.FC<LeafletViewProps> = ({
   const logMessage = useCallback(
     (message: string) => {
       if (doDebug) {
-        console.log(message);
+        // console.log(message);
       }
     },
     [doDebug]
