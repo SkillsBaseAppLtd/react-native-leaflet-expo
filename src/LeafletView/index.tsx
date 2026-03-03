@@ -1,7 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { WebView } from 'react-native-webview';
-import { readAsStringAsync } from 'expo-file-system';
-import { useAssets } from 'expo-asset';
 import {
   MapMarker,
   WebviewLeafletMessage,
@@ -13,28 +11,17 @@ import {
   OWN_POSTION_MARKER_ID,
 } from './types';
 import { LatLng } from 'react-leaflet';
-import { NativeSyntheticEvent, StyleSheet } from 'react-native';
+import { NativeSyntheticEvent, Platform, StyleSheet } from 'react-native';
 import {
   WebViewError,
   WebViewMessageEvent,
 } from 'react-native-webview/lib/WebViewTypes';
 import LoadingIndicator from '../LoadingIndicator';
 
-const LEAFLET_HTML_SOURCE = () => {
-  const [index] = useAssets(
-    require('../../android/src/main/assets/leaflet.html')
-  );
-
-  const [html, setHtml] = useState('');
-
-  if (index) {
-    readAsStringAsync(index[0].localUri as string).then((data) => {
-      setHtml(data);
-    });
-  }
-
-  return html;
-};
+const LEAFLET_HTML_SOURCE = Platform.select({
+  ios: require('../../android/src/main/assets/leaflet.html'),
+  android: { uri: 'file:///android_asset/leaflet.html' },
+});
 
 const DEFAULT_MAP_LAYERS = [
   {
@@ -65,20 +52,20 @@ export type LeafletViewProps = {
 };
 
 const LeafletView: React.FC<LeafletViewProps> = ({
-  renderLoading,
-  onError,
-  onLoadEnd,
-  onLoadStart,
-  onMessageReceived,
-  mapLayers,
-  mapMarkers,
-  mapShapes,
-  mapCenterPosition,
-  ownPositionMarker,
-  zoom,
-  doDebug,
-  androidHardwareAccelerationDisabled,
-}) => {
+                                                   renderLoading = (() => <LoadingIndicator />),
+                                                   onError,
+                                                   onLoadEnd,
+                                                   onLoadStart,
+                                                   onMessageReceived,
+                                                   mapLayers = DEFAULT_MAP_LAYERS,
+                                                   mapMarkers,
+                                                   mapShapes,
+                                                   mapCenterPosition,
+                                                   ownPositionMarker,
+                                                   zoom = DEFAULT_ZOOM,
+                                                   doDebug = __DEV__,
+                                                   androidHardwareAccelerationDisabled,
+                                                 }) => {
   const webViewRef = useRef<WebView>(null);
   const [initialized, setInitialized] = useState(false);
 
@@ -194,7 +181,7 @@ const LeafletView: React.FC<LeafletViewProps> = ({
     }
     sendMessage({
       ...ownPositionMarker,
-      id: OWN_POSTION_MARKER_ID,
+      id: OWN_POSTION_MARKER_ID
     });
   }, [initialized, ownPositionMarker, sendMessage]);
 
@@ -227,20 +214,13 @@ const LeafletView: React.FC<LeafletViewProps> = ({
       onError={onError}
       originWhitelist={['*']}
       renderLoading={renderLoading}
-      source={{ html: LEAFLET_HTML_SOURCE() }}
+      source={LEAFLET_HTML_SOURCE}
       allowFileAccess={true}
       allowUniversalAccessFromFileURLs={true}
       allowFileAccessFromFileURLs={true}
       androidHardwareAccelerationDisabled={androidHardwareAccelerationDisabled}
     />
   );
-};
-
-LeafletView.defaultProps = {
-  renderLoading: () => <LoadingIndicator />,
-  mapLayers: DEFAULT_MAP_LAYERS,
-  zoom: DEFAULT_ZOOM,
-  doDebug: __DEV__,
 };
 
 const styles = StyleSheet.create({
